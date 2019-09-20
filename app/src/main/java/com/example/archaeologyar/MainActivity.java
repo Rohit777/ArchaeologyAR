@@ -17,8 +17,8 @@ import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
+import com.google.ar.sceneform.ux.TransformableNode;
 
-import java.io.File;
 import java.util.concurrent.CompletableFuture;
 
 public class MainActivity extends AppCompatActivity {
@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
                     ModelRenderable.builder()
                             .setSource(this, Uri.parse("model.sfb"))
                             .build();
+
             infocardRendrable =
                     ViewRenderable.builder()
                             .setView(this, R.layout.card_view)
@@ -48,37 +49,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+        assert arFragment != null;
         arFragment.setOnTapArPlaneListener((hitResult, plane, motionEvent) -> {
             Anchor anchor = hitResult.createAnchor();
             AnchorNode anchorNode = new AnchorNode(anchor);
             anchorNode.setParent(arFragment.getArSceneView().getScene());
-            Node plcedObject = createViewRenderable();
-            anchorNode.addChild(plcedObject);
-//            ModelRenderable.builder()
-//                    .setSource(this, Uri.parse("model.sfb"))
-//                    .build()
-//                    .thenAccept(modelRenderable -> addModelToScene(anchor, modelRenderable))
-//                    .exceptionally(throwable -> {
-//                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//                        builder.setMessage(throwable.getMessage())
-//                                .show();
-//                        return null;
-//                    });
+            TransformableNode placedObject = createViewRenderable();
+            anchorNode.addChild(placedObject);
         });
         arFragment.getArSceneView().getScene().addOnUpdateListener(this::onUpdate);
     }
 
-//    private void addModelToScene(Anchor anchor, ModelRenderable modelRenderable) {
-//        AnchorNode anchorNode = new AnchorNode(anchor);
-//        TransformableNode transformableNode = new TransformableNode(arFragment.getTransformationSystem());
-//        transformableNode.setParent(anchorNode);
-//        transformableNode.setRenderable(modelRenderable);
-//        arFragment.getArSceneView().getScene().addChild(anchorNode);
-//        transformableNode.select();
-//    }
-
-    private Node createViewRenderable() {
-        Node base = new Node();
+    private TransformableNode createViewRenderable() {
+        TransformableNode base = new TransformableNode(arFragment.getTransformationSystem());
 
         Node object = new Node();
         object.setParent(base);
